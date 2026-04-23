@@ -1,13 +1,9 @@
-# ─── STAGE 1: BUILD ───────────────────────────────────────────
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-
 COPY package.json .
-
 RUN npm install --omit=dev
 
-# ─── STAGE 2: PRODUCTION ──────────────────────────────────────
 FROM node:20-alpine
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -15,7 +11,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 COPY --from=builder /app/node_modules ./node_modules
-
 COPY app.js .
 COPY views/ ./views/
 

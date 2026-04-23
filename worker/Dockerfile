@@ -1,13 +1,9 @@
-# ─── STAGE 1: BUILD ───────────────────────────────────────────
 FROM python:3.11-alpine AS builder
 
 WORKDIR /app
-
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# ─── STAGE 2: PRODUCTION ──────────────────────────────────────
 FROM python:3.11-alpine
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -15,7 +11,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 COPY --from=builder /install /usr/local
-
 COPY worker.py .
 
 RUN chown -R appuser:appgroup /app
