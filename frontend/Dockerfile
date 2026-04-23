@@ -1,24 +1,21 @@
-FROM node:20-slim AS builder
+# ─── STAGE 1: BUILD ───────────────────────────────────────────
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files first (layer caching)
 COPY package.json .
 
-# Install ALL dependencies including devDependencies
 RUN npm install --omit=dev
 
 # ─── STAGE 2: PRODUCTION ──────────────────────────────────────
-FROM node:20-slim
+FROM node:20-alpine
 
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-# Copy only production node_modules from builder
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy application files
 COPY app.js .
 COPY views/ ./views/
 
