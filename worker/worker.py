@@ -11,12 +11,15 @@ r = redis.Redis(
     decode_responses=True
 )
 
+
 def handle_shutdown(signum, frame):
     print("Worker shutting down gracefully...")
     sys.exit(0)
 
+
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
+
 
 def process_job(job_id):
     try:
@@ -30,6 +33,7 @@ def process_job(job_id):
             r.hset(f"job:{job_id}", "status", "failed")
         except Exception:
             pass
+
 
 while True:
     job = r.brpop("job", timeout=5)
