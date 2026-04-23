@@ -264,37 +264,32 @@ jobs:
             -t localhost:5000/frontend:${{ github.sha }} \
             --push ./frontend
 
-      - name: Install Trivy
-        run: |
-          wget -q https://github.com/aquasecurity/trivy/releases/download/v0.50.1/trivy_0.50.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
-
       - name: Scan API image
-        run: |
-          trivy image \
-            --exit-code 1 \
-            --severity CRITICAL \
-            --format sarif \
-            --output trivy-api.sarif \
-            localhost:5000/api:${{ github.sha }}
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: localhost:5000/api:${{ github.sha }}
+          format: sarif
+          output: trivy-api.sarif
+          severity: CRITICAL
+          exit-code: '1'
 
       - name: Scan Worker image
-        run: |
-          trivy image \
-            --exit-code 1 \
-            --severity CRITICAL \
-            --format sarif \
-            --output trivy-worker.sarif \
-            localhost:5000/worker:${{ github.sha }}
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: localhost:5000/worker:${{ github.sha }}
+          format: sarif
+          output: trivy-worker.sarif
+          severity: CRITICAL
+          exit-code: '1'
 
       - name: Scan Frontend image
-        run: |
-          trivy image \
-            --exit-code 1 \
-            --severity CRITICAL \
-            --format sarif \
-            --output trivy-frontend.sarif \
-            localhost:5000/frontend:${{ github.sha }}
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: localhost:5000/frontend:${{ github.sha }}
+          format: sarif
+          output: trivy-frontend.sarif
+          severity: CRITICAL
+          exit-code: '1'
 
       - name: Upload Trivy SARIF results
         uses: actions/upload-artifact@v4
